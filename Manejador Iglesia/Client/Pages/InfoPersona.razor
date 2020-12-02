@@ -1,0 +1,126 @@
+﻿@page "/infopersona/{id}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@inject Microsoft.AspNetCore.Components.NavigationManager NavMan
+@using Manejador_Iglesia.Shared.Models
+@using System.IO
+@attribute [Authorize]
+@inject HttpClient Http
+
+<h3><b>Datos de la persona</b></h3>
+<br>
+<p>Página con toda la información de la persona.</p>
+<hr />
+
+<label><b>ID: </b></label> @datosgenerales.PersonaId
+<br />
+<label><b>Nombre: </b></label> @datosgenerales.Nombres
+<br />
+<label><b>Fecha Nacimiento: </b></label> @datosgenerales.FechaNacimiento.ToShortDateString()
+<br />
+<label><b>País de Nacimiento: </b></label> @datosgenerales.PaisNacimiento
+<br />
+<label><b>Ciudad de Nacimiento: </b></label> @datosgenerales.CiudadNacimiento
+<br />
+<label><b>País Residencia: </b></label> @datosgenerales.PaisActual
+<br />
+<label><b>Ciudad Residencia: </b></label> @datosgenerales.CiudadActual
+<br />
+<label><b>Dirección: </b> </label> @datosgenerales.Direccion
+<br />
+<label><b>Teléfono: </b> </label> @datosgenerales.Telefono
+<br />
+<label><b>Celular: </b> </label> @datosgenerales.Celular
+<br />
+<label><b>Correo: </b> </label> @datosgenerales.CorreoElectronico
+<br />
+<label><b>Tipo de Documento: </b> </label> @datosgenerales.DocumentoIdentidad
+<br />
+<label><b>No. Documento: </b> </label> @datosgenerales.NumeroIdentidad
+<br />
+<label><b>Estado Civil: </b> </label> @datosgenerales.EstadoCivil
+<br />
+<label><b>Hijos: </b> </label> @datosgenerales.Hijos
+<br />
+<label><b>No. de Hijos: </b> </label> @datosgenerales.NumeroHijos
+<br />
+<label><b>Profesión: </b> </label> @datosgenerales.Profesion
+<br />
+<label><b>Ocupación Actual: </b> </label> @datosgenerales.OcupacionActual
+<br />
+<label><b>Nombre de Empresa: </b> </label> @datosgenerales.NombreEmpresa
+<br />
+<label><b>Teléfono Empresa: </b> </label> @datosgenerales.TelefonoLaboral
+<br />
+<label><b>Fecha Conversión: </b> </label> @datosgenerales.FechaConversion.ToShortDateString()
+<br />
+<label><b>Fecha Bautismo: </b> </label> @datosgenerales.FechaBautismo.ToShortDateString()
+<br />
+<label><b>Fecha Aceptado como miembro de la Iglesia: </b></label> @datosgenerales.FechaAceptacion.ToShortDateString()
+<br />
+<label><b>Denominación: </b> </label> @datosgenerales.Denominacion
+<br />
+<label><b>Iglesia Actual: </b> </label> @datosgenerales.IglesiaActual
+<br />
+<label><b>Iglesia Anterior: </b> </label> @datosgenerales.IglesiaAnterior
+<br />
+<label><b>Nombre Pastor: </b> </label> @datosgenerales.NombrePastor
+<br />
+<label><b>¿Ha sido disciplinado alguna vez? </b> </label> @datosgenerales.Disiciplinado
+<br />
+<label><b>En caso positivo, ¿cuántas veces?</b> </label> @datosgenerales.VecesDisciplinado
+<br />
+<label><b>En caso positivo, ¿Por cuáles casuas?</b> </label> @datosgenerales.CausasDisciplinado
+<br />
+<label><b>¿Alguna vez ha ejercido una función?</b> </label> @datosgenerales.Funcion
+<br />
+<label><b>Ministerio que ha servido: </b> </label> @datosgenerales.MinisteriosServidos
+<br />
+<label><b>Ministerio que ha tenido mayor fruto: </b> </label> @datosgenerales.MinisterioMayorFruto
+<br />
+<label><b>Ministerio que cree que Dios lo está llamando: </b> </label> @datosgenerales.MinisterioLlamando
+<br />
+<label><b>Metas: </b> </label> @datosgenerales.Metas
+<br />
+<label><b>Respaldo de autoridades: </b> </label> @datosgenerales.RespaldoAutoridades
+<br />
+<label><b>Nivel de estudio: </b> </label> @datosgenerales.NivelEstudio
+<br />
+<label><b>¿Suspendido alguna institución?: </b> </label> @datosgenerales.SuspensionInstitucion
+<br />
+<label><b>En caso positivo, razón de la suspensión: </b> </label> @datosgenerales.RazonSuspension
+<br />
+
+@code
+
+{
+    [Parameter]
+    public string id { get; set; }
+
+    Persona datosgenerales = new Persona();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        datosgenerales = await Http.GetFromJsonAsync<Persona>("/api/Personas/" + int.Parse(id));
+
+        if (datosgenerales.EstadoCivil == "Soltero")
+        {
+            datosgenerales.NombrePareja = "N/A";
+        }
+        if (datosgenerales.Hijos == "No")
+        {
+            datosgenerales.NumeroHijos = 0;
+        }
+        if (datosgenerales.SuspensionInstitucion == "No")
+        {
+            datosgenerales.RazonSuspension = "N/A";
+        }
+        if (datosgenerales.Disiciplinado == "No")
+        {
+            datosgenerales.VecesDisciplinado = 0;
+            datosgenerales.CausasDisciplinado = "N/A";
+        }
+    }
+
+}

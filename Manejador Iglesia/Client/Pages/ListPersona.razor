@@ -1,0 +1,107 @@
+@page "/listpersona"
+@using Microsoft.AspNetCore.Authorization
+@inject Microsoft.AspNetCore.Components.NavigationManager NavMan
+@using Manejador_Iglesia.Shared.Models
+@attribute [Authorize]
+@inject HttpClient Http
+
+<h1 style="text-align:center">Lista de Personas</h1>
+<hr />
+
+@if (datosgenerales == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <p>
+        <a href="/addpersona" class="btn btn-success btn-xs">Agregar Persona</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>No. Identidad</th>
+                <th>Denominacion</th>
+                <th>Imagen</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in datosgenerales)
+            {
+            <tr>
+                <td>@x.PersonaId</td>
+                <td>@x.Nombres</td>
+                <td>@x.Apellidos</td>
+                <td>@x.NumeroIdentidad</td>
+                <td>@x.Denominacion</td>
+                @if (@x.Imagen != null)
+                {
+                    <td>
+                        <img src=@string.Format("data:image/jpg;base64, {0}", Convert.ToBase64String(Imagen(Convert.ToBase64String(x.Imagen)))) height="100" width="100" />
+                    </td>
+                }
+                else
+                {
+                    <td><img src="https://i1.pngguru.com/preview/658/470/455/krzp-dock-icons-v-1-2-empty-grey-empty-text-png-clipart.jpg" width="100" height="100"></td>
+                }
+                <td><button class="btn btn-primary" @onclick=@(() => Edit(x.PersonaId))>Editar</button></td>
+                <td><button class="btn btn-danger" @onclick=@(() => Delete(x.PersonaId))>Eliminar</button></td>
+                <td><button class="btn btn-secondary" @onclick=@(() => Info(x.PersonaId))>Detalles</button></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Persona[] datosgenerales;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            datosgenerales = await Http.GetFromJsonAsync<Persona[]>("/api/Personas");
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    protected async Task Delete(int id)
+    {
+        await Http.DeleteAsync("/api/Personas/" + id);
+        await OnInitializedAsync();
+    }
+
+    protected void Edit(int id)
+    {
+
+        NavMan.NavigateTo($"/editpersona/{id}");
+    }
+
+    protected void Info(int id)
+    {
+
+        NavMan.NavigateTo($"/infopersona/{id}");
+    }
+
+    private byte[] Imagen(string sBase64String)
+    {
+        byte[] bytes = null;
+        if (sBase64String != null)
+        {
+            bytes = Convert.FromBase64String(sBase64String);
+        }
+
+        return bytes;
+    }
+
+
+}
